@@ -9,6 +9,8 @@
 // Note that as usual, any environment variables you expose through it will end up in your
 // bundle, and you should not use it for any sensitive information like passwords or keys.
 import { env } from './.env';
+import { NgxsLoggerPluginModule } from '@ngxs/logger-plugin';
+import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 
 export const environment = {
   production: false,
@@ -17,6 +19,8 @@ export const environment = {
   serverUrl: '/api',
   defaultLanguage: 'en-US',
   supportedLanguages: ['en-US', 'zh-CN'],
+  ws_url: 'ws://127.0.0.1:4200',
+  plugins: [NgxsLoggerPluginModule.forRoot(), NgxsReduxDevtoolsPluginModule.forRoot()],
 };
 
 /*
