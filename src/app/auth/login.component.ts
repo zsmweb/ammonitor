@@ -1,11 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
+import { finalize, tap, filter, takeUntil, take, map } from 'rxjs/operators';
 
 import { environment } from '@env/environment';
 import { Logger, untilDestroyed } from '@core';
 import { AuthenticationService } from './authentication.service';
+import { Select, Store, Selector } from '@ngxs/store';
+import { Observable } from 'rxjs';
+import { SubmitLoginForm } from './state/login.actions';
+import { Navigate } from '@ngxs/router-plugin';
+import { AuthState } from './state/auth.state';
 
 const log = new Logger('Login');
 
@@ -20,40 +25,27 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   isLoading = false;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private formBuilder: FormBuilder,
-    private authenticationService: AuthenticationService
-  ) {
+  auth$ = this.store.select(AuthState.isAuthenticated);
+
+  constructor(private formBuilder: FormBuilder, private store: Store, private route: ActivatedRoute) {
     this.createForm();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.auth$.forEach((auth) => {
+      if (auth) {
+        this.store.dispatch(new Navigate([this.route.snapshot.queryParams.redirect || '/']));
+      }
+    });
+  }
 
   ngOnDestroy() {}
 
   login() {
     this.isLoading = true;
-    const login$ = this.authenticationService.login(this.loginForm.value);
-    login$
-      .pipe(
-        finalize(() => {
-          this.loginForm.markAsPristine();
-          this.isLoading = false;
-        }),
-        untilDestroyed(this)
-      )
-      .subscribe(
-        (credentials) => {
-          log.debug(`${credentials.username} successfully logged in`);
-          this.router.navigate([this.route.snapshot.queryParams.redirect || '/'], { replaceUrl: true });
-        },
-        (error) => {
-          log.debug(`Login error: ${error}`);
-          this.error = error;
-        }
-      );
+    this.store.dispatch(new SubmitLoginForm()).subscribe((res) => {
+      this.isLoading = false;
+    });
   }
 
   private createForm() {

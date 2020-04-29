@@ -8,7 +8,13 @@
   </div>
   <div class="login-container" fxLayout="row" fxLayoutAlign="center">
     <mat-card fxFlex="90%" fxFlex.sm="66%" fxFlex.md="50%" fxFlex.gt-md="33%" class="login-box">
-      <form (ngSubmit)="login()" [formGroup]="loginForm" novalidate>
+      <form
+        (ngSubmit)="login()"
+        [formGroup]="loginForm"
+        ngxsForm="login.loginForm"
+        ngxsFormClearOnDestroy="true"
+        novalidate
+      >
         <div class="login-error" [hidden]="!error || isLoading" translate>
           Username or password incorrect.
         </div>

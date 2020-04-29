@@ -4,6 +4,10 @@ import { Router } from '@angular/router';
 import { MatSidenav } from '@angular/material/sidenav';
 
 import { AuthenticationService, CredentialsService } from '@app/auth';
+import { Store } from '@ngxs/store';
+import { Logout } from '@app/auth/state/auth.actions';
+import { AuthState } from '@app/auth/state/auth.state';
+import { Navigate } from '@ngxs/router-plugin';
 
 @Component({
   selector: 'app-header',
@@ -13,22 +17,15 @@ import { AuthenticationService, CredentialsService } from '@app/auth';
 export class HeaderComponent implements OnInit {
   @Input() sidenav!: MatSidenav;
 
-  constructor(
-    private router: Router,
-    private titleService: Title,
-    private authenticationService: AuthenticationService,
-    private credentialsService: CredentialsService
-  ) {}
+  username$ = this.store.select(AuthState.username);
+  constructor(private store: Store, private titleService: Title) {}
 
   ngOnInit() {}
 
   logout() {
-    this.authenticationService.logout().subscribe(() => this.router.navigate(['/login'], { replaceUrl: true }));
-  }
-
-  get username(): string | null {
-    const credentials = this.credentialsService.credentials;
-    return credentials ? credentials.username : null;
+    this.store.dispatch(new Logout()).subscribe((ob) => {
+      this.store.dispatch(new Navigate(['/login']));
+    });
   }
 
   get title(): string {

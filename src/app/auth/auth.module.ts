@@ -9,6 +9,10 @@ import { MaterialModule } from '@app/material.module';
 import { I18nModule } from '@app/i18n';
 import { AuthRoutingModule } from './auth-routing.module';
 import { LoginComponent } from './login.component';
+import { NgxsFormPluginModule } from '@ngxs/form-plugin';
+import { NgxsModule } from '@ngxs/store';
+
+import { LoginState } from './state/login.state';
 
 @NgModule({
   imports: [
@@ -20,6 +24,8 @@ import { LoginComponent } from './login.component';
     MaterialModule,
     I18nModule,
     AuthRoutingModule,
+
+    NgxsFormPluginModule,
   ],
   declarations: [LoginComponent],
 })

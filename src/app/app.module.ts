@@ -25,6 +25,8 @@ import { HomeModule } from './home/home.module';
 import { ShellModule } from './shell/shell.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { AuthState } from './auth/state/auth.state';
+import { LoginState } from './auth/state/login.state';
 
 @NgModule({
   imports: [
@@ -44,7 +46,7 @@ import { AppRoutingModule } from './app-routing.module';
     AppRoutingModule, // must be imported as the last module as it contains the fallback route
 
     //third part
-    NgxsModule.forRoot([]),
+    NgxsModule.forRoot([AuthState, LoginState]),
     NgxsLoggerPluginModule.forRoot(),
     NgxsStoragePluginModule.forRoot(),
     NgxsFormPluginModule.forRoot(),
