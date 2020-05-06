@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Credentials, CredentialsService } from './credentials.service';
+import { catchError } from 'rxjs/operators';
 
 export interface LoginContext {
   username: string;
@@ -17,30 +18,43 @@ export interface LoginContext {
   providedIn: 'root',
 })
 export class AuthenticationService {
-  constructor(private credentialsService: CredentialsService) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * Authenticates the user.
    * @param context The login parameters.
-   * @return The user credentials.
+   * @return The user AuthStateModel.
    */
-  login(context: LoginContext): Observable<Credentials> {
-    // Replace by proper authentication call
-    const data = {
-      username: context.username,
-      token: '123456',
-    };
-    this.credentialsService.setCredentials(data, context.remember);
-    return of(data);
+  login(context: LoginContext): Observable<string> {
+    return this.http
+      .post('/login', context, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        responseType: 'text',
+      })
+      .pipe(catchError(this.handleError));
   }
 
   /**
-   * Logs out the user and clear credentials.
+   * Logs out the user and clear AuthStateModel.
    * @return True if the user was logged out successfully.
    */
   logout(): Observable<boolean> {
-    // Customize credentials invalidation here
-    this.credentialsService.setCredentials();
+    // Customize AuthStateModel invalidation here
     return of(true);
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      console.error(`Backend returned code ${error.status}, ` + `body was: ${error.error}`);
+    }
+    // return an observable with a user-facing error message
+    return throwError('Something bad happened; please try again later.');
   }
 }

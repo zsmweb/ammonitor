@@ -6,9 +6,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MaterialModule } from '@app/material.module';
 
 import { CoreModule } from '@core';
-import { AuthenticationService, CredentialsService } from '@app/auth';
+import { AuthenticationService } from '@app/auth';
 import { MockAuthenticationService } from '@app/auth/authentication.service.mock';
-import { MockCredentialsService } from '@app/auth/credentials.service.mock';
 
 import { I18nModule } from '@app/i18n';
 import { ShellComponent } from './shell.component';
@@ -29,10 +28,7 @@ describe('ShellComponent', () => {
         MaterialModule,
         CoreModule,
       ],
-      providers: [
-        { provide: AuthenticationService, useClass: MockAuthenticationService },
-        { provide: CredentialsService, useClass: MockCredentialsService },
-      ],
+      providers: [{ provide: AuthenticationService, useClass: MockAuthenticationService }],
       declarations: [HeaderComponent, ShellComponent],
     }).compileComponents();
   }));

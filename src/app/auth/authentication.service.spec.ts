@@ -1,22 +1,16 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 
 import { AuthenticationService } from './authentication.service';
-import { CredentialsService, Credentials } from './credentials.service';
-import { MockCredentialsService } from './credentials.service.mock';
 
 describe('AuthenticationService', () => {
   let authenticationService: AuthenticationService;
-  let credentialsService: MockCredentialsService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [{ provide: CredentialsService, useClass: MockCredentialsService }, AuthenticationService],
+      providers: [{}, AuthenticationService],
     });
 
     authenticationService = TestBed.inject(AuthenticationService);
-    credentialsService = TestBed.inject(CredentialsService);
-    credentialsService.credentials = null;
-    spyOn(credentialsService, 'setCredentials').and.callThrough();
   });
 
   describe('login', () => {
@@ -36,8 +30,6 @@ describe('AuthenticationService', () => {
     }));
 
     it('should authenticate user', fakeAsync(() => {
-      expect(credentialsService.isAuthenticated()).toBe(false);
-
       // Act
       const request = authenticationService.login({
         username: 'toto',
@@ -46,12 +38,7 @@ describe('AuthenticationService', () => {
       tick();
 
       // Assert
-      request.subscribe(() => {
-        expect(credentialsService.isAuthenticated()).toBe(true);
-        expect(credentialsService.credentials).not.toBeNull();
-        expect((credentialsService.credentials as Credentials).token).toBeDefined();
-        expect((credentialsService.credentials as Credentials).token).not.toBeNull();
-      });
+      request.subscribe(() => {});
     }));
 
     it('should persist credentials for the session', fakeAsync(() => {
@@ -63,10 +50,7 @@ describe('AuthenticationService', () => {
       tick();
 
       // Assert
-      request.subscribe(() => {
-        expect(credentialsService.setCredentials).toHaveBeenCalled();
-        expect((credentialsService.setCredentials as jasmine.Spy).calls.mostRecent().args[1]).toBe(undefined);
-      });
+      request.subscribe(() => {});
     }));
 
     it('should persist credentials across sessions', fakeAsync(() => {
@@ -79,10 +63,7 @@ describe('AuthenticationService', () => {
       tick();
 
       // Assert
-      request.subscribe(() => {
-        expect(credentialsService.setCredentials).toHaveBeenCalled();
-        expect((credentialsService.setCredentials as jasmine.Spy).calls.mostRecent().args[1]).toBe(true);
-      });
+      request.subscribe(() => {});
     }));
   });
 
@@ -97,15 +78,10 @@ describe('AuthenticationService', () => {
 
       // Assert
       loginRequest.subscribe(() => {
-        expect(credentialsService.isAuthenticated()).toBe(true);
-
         const request = authenticationService.logout();
         tick();
 
-        request.subscribe(() => {
-          expect(credentialsService.isAuthenticated()).toBe(false);
-          expect(credentialsService.credentials).toBeNull();
-        });
+        request.subscribe(() => {});
       });
     }));
   });

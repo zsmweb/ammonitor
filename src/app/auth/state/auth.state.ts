@@ -8,6 +8,10 @@ import { AuthenticationService } from '../authentication.service';
 export class AuthStateModel {
   token: string | null;
   username: string | null;
+  constructor(token: string, username: string) {
+    this.token = token;
+    this.username = username;
+  }
 }
 
 @State<AuthStateModel>({
@@ -39,9 +43,9 @@ export class AuthState {
   @Action(Login)
   login(ctx: StateContext<AuthStateModel>, action: Login) {
     return this.authService.login(action.payload).pipe(
-      tap((result: { token: string }) => {
+      tap((result: string) => {
         ctx.patchState({
-          token: result.token,
+          token: result,
           username: action.payload.username,
         });
       })

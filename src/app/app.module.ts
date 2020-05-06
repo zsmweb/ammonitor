@@ -48,7 +48,9 @@ import { LoginState } from './auth/state/login.state';
     //third part
     NgxsModule.forRoot([AuthState, LoginState]),
     NgxsLoggerPluginModule.forRoot(),
-    NgxsStoragePluginModule.forRoot(),
+    NgxsStoragePluginModule.forRoot({
+      key: ['auth'],
+    }),
     NgxsFormPluginModule.forRoot(),
     NgxsRouterPluginModule.forRoot(),
     NgxsWebsocketPluginModule.forRoot({

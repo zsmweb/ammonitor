@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 
 import { Logger } from '@core';
-import { CredentialsService } from './credentials.service';
+import { Store } from '@ngxs/store';
+import { AuthState } from './state/auth.state';
+import { Navigate } from '@ngxs/router-plugin';
 
 const log = new Logger('AuthenticationGuard');
 
@@ -10,15 +12,15 @@ const log = new Logger('AuthenticationGuard');
   providedIn: 'root',
 })
 export class AuthenticationGuard implements CanActivate {
-  constructor(private router: Router, private credentialsService: CredentialsService) {}
+  constructor(private router: Router, private store: Store) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.credentialsService.isAuthenticated()) {
+    if (this.store.selectSnapshot(AuthState.isAuthenticated)) {
       return true;
     }
 
     log.debug('Not authenticated, redirecting and adding redirect url...');
-    this.router.navigate(['/login'], { queryParams: { redirect: state.url }, replaceUrl: true });
+    this.store.dispatch(new Navigate(['/login'], { queryParams: { redirect: state.url }, replaceUrl: true }));
     return false;
   }
 }
